@@ -18,7 +18,7 @@ local logfilePath = os.getenv("HOME") .. "/hammerspoon_clickthrough.log"
 local logfile = assert(io.open(logfilePath, "a"))
 local function log(message, level)
     level = level or "INFO"
-    local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+    local timestamp = os.date("%H:%M:%S")
     logfile:write(string.format("%s [%s] %s\n", timestamp, level, message))
     logfile:flush()
 end
