@@ -24,7 +24,7 @@ local function log(message, level)
 end
 
 -- Eventtap: Focus window under mouse and log click
-local clickLogger = hs.eventtap.new({hs.eventtap.event.types.leftMouseDown}, function(event)
+clickLogger = hs.eventtap.new({hs.eventtap.event.types.leftMouseDown}, function(event)
     local win = windowUnderMouse()
     local frontmost = hs.window.frontmostWindow()
     if win then
