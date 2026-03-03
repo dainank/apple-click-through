@@ -115,16 +115,34 @@ local logfilePath = os.getenv("HOME") .. "/hammerspoon_clickthrough.log"
 local logfile = assert(io.open(logfilePath, "a"))
 local function log(message, level)
     level = level or "INFO"
-    local timestamp = os.date("%H:%M:%S")
+    local timestamp = os.date("%Y-%m-%d %H:%M:%S")
     logfile:write(string.format("%s [%s] %s\n", timestamp, level, message))
     logfile:flush()
 end
 
--- Eventtap: Focus window under mouse and log click
+-- Eventtap: Focus window under mouse and log click (with menu/dialog handling)
 
 clickLogger = hs.eventtap.new({hs.eventtap.event.types.leftMouseDown}, function(event)
-    local win = windowUnderMouse()
+    local ax = require("hs.axuielement")
+    local mousePos = hs.mouse.absolutePosition()
+    local element = ax.systemElementAtPosition(mousePos)
+
+    if element then
+        local role = element:attributeValue("AXRole")
+        log("role: " .. (role or "Untitled role"))
+        if role == "AXMenu" or role == "AXMenuItem" then
+            log("Skip on role: " .. role)
+            return false -- allow original click
+        end
+    end
+
     local frontmost = hs.window.frontmostWindow()
+    if frontmost and frontmost:subrole() == "AXDialog" then
+        log("Skip on subrole: " .. frontmost:subrole())
+        return false -- allow original click
+    end
+
+    local win = windowUnderMouse()
     if win then
         -- If it's a normal window
         if win.id and win.title then
@@ -149,6 +167,7 @@ clickLogger = hs.eventtap.new({hs.eventtap.event.types.leftMouseDown}, function(
     else
         log("No window or AX element under mouse")
     end
+
     return false -- allow original click
 end)
 
