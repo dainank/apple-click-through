@@ -1,6 +1,6 @@
 # Apply Click-Through
 
-The goal of this script is to provide **a robust solution that solves this issue** on the latest version of *MacOS* as of now (`15.6`). It will essentially **enable click-through** with no noticeable effects to the user.
+The goal of this script is to provide **a robust solution on MacOS for not requiring an explicit click to make window active, before UI elements inside can be clicked. It will essentially **enable click-through** with no noticeable effects to the user.
 
 1. `brew install hammerspoon`
     - If you are not using [Homebrew][2], simply install [Hammerspoon][3] from their website.
