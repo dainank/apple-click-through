@@ -1,4 +1,4 @@
-# Apply Click-Through
+# Apple Click-Through
 
 The goal of this script is to provide **a robust solution on MacOS for not requiring an explicit click to make window active, before UI elements inside can be clicked**. It will essentially **enable click-through** with no noticeable effects to the user.
 
