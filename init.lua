@@ -120,9 +120,16 @@ local function log(message, level)
     logfile:flush()
 end
 
+-- Guard flag: synthetic clicks re-trigger the event tap, so we detect and pass them through
+local isSyntheticClick = false
+
 -- Eventtap: Focus window under mouse and log click (with menu/dialog handling)
 
 clickLogger = hs.eventtap.new({hs.eventtap.event.types.leftMouseDown}, function(event)
+    if isSyntheticClick then
+        isSyntheticClick = false
+        return false
+    end
     local ax = require("hs.axuielement")
     local mousePos = hs.mouse.absolutePosition()
     local element = ax.systemElementAtPosition(mousePos)
@@ -149,6 +156,16 @@ clickLogger = hs.eventtap.new({hs.eventtap.event.types.leftMouseDown}, function(
             if win:id() ~= (frontmost and frontmost:id()) then
                 win:focus()
                 log("Focused window: " .. (win:title() or "Untitled"))
+                -- Consume original click, then post a synthetic click after
+                -- macOS completes the focus transition (~30-60ms).
+                -- Without this, text fields in the newly-focused window
+                -- swallow the click before they're properly active.
+                local clickPos = hs.mouse.absolutePosition()
+                hs.timer.doAfter(0.08, function()
+                    isSyntheticClick = true
+                    hs.eventtap.leftClick(clickPos)
+                end)
+                return true -- consume original click
             else
                 log("Clicked already-focused window: " .. (win:title() or "Untitled"))
             end
