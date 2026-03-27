@@ -120,9 +120,18 @@ local function log(message, level)
     logfile:flush()
 end
 
+-- Guard synthetic mousedown re-entry without a fragile global boolean.
+-- We only tap leftMouseDown, so track pending synthetic downs.
+local pendingSyntheticMouseDown = 0
+
 -- Eventtap: Focus window under mouse and log click (with menu/dialog handling)
 
 clickLogger = hs.eventtap.new({hs.eventtap.event.types.leftMouseDown}, function(event)
+    if pendingSyntheticMouseDown > 0 then
+        pendingSyntheticMouseDown = pendingSyntheticMouseDown - 1
+        return false -- pass synthetic event through
+    end
+
     local ax = require("hs.axuielement")
     local mousePos = hs.mouse.absolutePosition()
     local element = ax.systemElementAtPosition(mousePos)
@@ -147,8 +156,27 @@ clickLogger = hs.eventtap.new({hs.eventtap.event.types.leftMouseDown}, function(
         -- If it's a normal window
         if win.id and win.title then
             if win:id() ~= (frontmost and frontmost:id()) then
+                local clickPos = event:location()
+                local flags = event:getFlags() or {}
+                local clickState = event:getProperty(hs.eventtap.event.properties.mouseEventClickState) or 1
+
                 win:focus()
                 log("Focused window: " .. (win:title() or "Untitled"))
+
+                -- Consume original mousedown, then replay a mousedown after focus settles.
+                -- This preserves modifiers/click-state better than hs.eventtap.leftClick().
+                hs.timer.doAfter(0.08, function()
+                    pendingSyntheticMouseDown = pendingSyntheticMouseDown + 1
+                    local down = hs.eventtap.event.newMouseEvent(
+                        hs.eventtap.event.types.leftMouseDown,
+                        clickPos,
+                        flags
+                    )
+                    down:setProperty(hs.eventtap.event.properties.mouseEventClickState, clickState)
+                    down:post()
+                end)
+
+                return true -- consume original mousedown
             else
                 log("Clicked already-focused window: " .. (win:title() or "Untitled"))
             end
