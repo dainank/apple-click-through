@@ -160,7 +160,7 @@ clickLogger = hs.eventtap.new({hs.eventtap.event.types.leftMouseDown}, function(
                 -- macOS completes the focus transition (~30-60ms).
                 -- Without this, text fields in the newly-focused window
                 -- swallow the click before they're properly active.
-                local clickPos = hs.mouse.absolutePosition()
+                local clickPos = mousePos
                 hs.timer.doAfter(0.08, function()
                     isSyntheticClick = true
                     hs.eventtap.leftClick(clickPos)
