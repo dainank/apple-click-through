@@ -177,7 +177,7 @@ local function findTarget(mousePos)
 end
 
 -- ============================================================================
--- EVENT TAP  (Fixes #1, #5, #6, #7, #8, #11)
+-- EVENT TAP
 -- ============================================================================
 
 local lastClickTime = 0
@@ -252,7 +252,7 @@ function(event)  -- luacheck: ignore event (reserved for future use)
         local axWin = findAxWindowAncestor(elem)
 
         if axWin then
-            -- Fix #7: skip if the element is inside a dialog window.
+            -- Skip if the element is inside a dialog window.
             local subrole = getAxAttribute(axWin, "AXSubrole")
             if subrole == "AXDialog" then
                 log("Skip: AX element is inside a dialog (" .. title .. ")")
@@ -288,15 +288,51 @@ clickLogger:start()
 log("Click-through event tap started", "INFO")
 
 -- ============================================================================
+-- DEBUG TIMER  (W1)
+-- Logs the event tap's enabled state every 10 seconds.
+-- This lets you confirm whether macOS is silently killing the tap:
+--   • You'll see "isEnabled: true" while everything works.
+--   • The first "isEnabled: false" entry marks exactly when the tap died.
+-- Remove or comment out this block once the root cause is confirmed.
+-- ============================================================================
+
+local debugTimer = hs.timer.new(10, function()
+    local enabled = clickLogger:isEnabled()
+    log(string.format("Event tap health check — isEnabled: %s", tostring(enabled)), "DEBUG")
+end)
+
+debugTimer:start()
+log("Debug health-check timer started (10 s interval)", "DEBUG")
+
+-- ============================================================================
+-- WATCHDOG TIMER  (W2)
+-- macOS silently disables event taps that block for too long (the OS watchdog).
+-- This timer checks every 5 seconds and restarts the tap if that happened.
+-- The WARN log entry tells you how often macOS is killing it.
+-- ============================================================================
+
+local watchdogTimer = hs.timer.new(5, function()
+    if not clickLogger:isEnabled() then
+        log("Event tap was disabled by macOS watchdog — restarting", "WARN")
+        clickLogger:start()
+    end
+end)
+
+watchdogTimer:start()
+log("Watchdog timer started (5 s interval)", "INFO")
+
+-- ============================================================================
 -- SHUTDOWN
 -- ============================================================================
 
--- Preserve any shutdownCallback set by other modules instead of
+-- preserve any shutdownCallback set by other modules instead of
 -- silently replacing it.
 local prevShutdownCallback = hs.shutdownCallback
 
 hs.shutdownCallback = function()
     log("Hammerspoon shutting down — closing log", "INFO")
+    watchdogTimer:stop()
+    debugTimer:stop()
     if logfile then
         pcall(function() logfile:close() end)
         logfile = nil
