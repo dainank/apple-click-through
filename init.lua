@@ -218,12 +218,25 @@ function(event)  -- luacheck: ignore event (reserved for future use)
             return false
         end
 
+        local SKIP_FOR_WINDOW_TITLES = {
+            -- Microsoft Teams Screen Sharing catches all clicks but is *not* the foreground window
+            -- so if we'd focus it, we'd lose the click on the really intended window; this is strange
+            -- anyway, because it mostly affects the viewports of browsers: e.g. changing tab works,
+            -- clicking a link on a page doesn't ...
+            -- Caveat is we loose the clickthrough on the shared screen :-()
+            ["Sharing Indicator"] = true 
+        }
+
         local frontmost = hs.window.frontmostWindow()
-        if win:id() ~= (frontmost and frontmost:id()) then
+        local winTitle = (win:title() or "-Untitled-");
+        if win:id() == (frontmost and frontmost:id()) then
+            log("Clicked already-focused window: " .. (win:title() or "Untitled"))
+        elseif SKIP_FOR_WINDOW_TITLES[winTitle] then
+            log("Skip: special window: " .. winTitle)
+            return false
+        else
             win:focus()
             log("Focused window: " .. (win:title() or "Untitled"))
-        else
-            log("Clicked already-focused window: " .. (win:title() or "Untitled"))
         end
 
     -- ── AX element (panel, popover, toolbar item, status-bar widget, …) ───────
