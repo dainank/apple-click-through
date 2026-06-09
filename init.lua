@@ -193,6 +193,28 @@ function(event)  -- luacheck: ignore event (reserved for future use)
     end
     lastClickTime = now
 
+    --- prevent click through on certain mouse cursor types
+    --- -------------------------------------------------------------------
+    --- * A window-resize handle may be just outside of the window
+    --- * A drag/drop operation
+    local mouseCursorType = hs.mouse.currentCursorType()
+    local skipOnCursor = {
+        operationNotAllowedCursor,
+        -- arrowCursor=true, 
+        contextualMenuCursor=true, closedHandCursor=true, crosshairCursor=true, disappearingItemCursor=true, 
+        dragCopyCursor=true, dragLinkCursor=true, 
+        -- IBeamCursor=true, 
+        resizeDownCursor=true, resizeLeftCursor=true, resizeLeftRightCursor=true, resizeRightCursor=true, resizeUpCursor=true, resizeUpDownCursor=true,
+        -- IBeamCursorForVerticalLayout,
+        unknown=true,
+        unknownCursor=true
+    }
+    log("mouseCursorType: " .. (mouseCursorType or "nil"))
+    if nil ~= mouseCursorType and nil ~= skipOnCursor[mouseCursorType] then
+        log("Skip on mouseCursorType: " .. mouseCursorType)
+        return false
+    end
+
     local mousePos = hs.mouse.absolutePosition()
 
     -- single detection call shared by both inspection and focus logic.
