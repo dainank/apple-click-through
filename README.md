@@ -14,7 +14,7 @@ The goal of this script is to provide **a robust solution on MacOS for not requi
 4. Copy the [following config][1] into your `hammerspoon` config.
 5. Click on the **hammer** icon again and press **Reload Config**.
 6. `tail -f /Users/$USER/hammerspoon_clickthrough.log`
-    - This will print the logs of click events to help verify whether the solution is working.
+    - This will print the logs of click events to help verify whether the solution is working (also use these logs to debug if behavior is as expected).
 
 ## To Note
 
@@ -32,9 +32,15 @@ The goal of this script is to provide **a robust solution on MacOS for not requi
 
 The original [GitHub Gist for this idea, can be found here](https://gist.github.com/dainank/fd236aa71a8b3fcf637b9d8428ce98db), which was sparked by this discussion [here](https://apple.stackexchange.com/q/269622/583325).
 
----
+----
+
+## Mirror
+
+We have a mirror on _gidot_, an open-source alternative to _GitHub_: https://gitdot.io/dainank/apple-click-through
+
+----
 
 ## Special Thanks
 
-- [@autoclave73](https://github.com/autoclave73)
 - [@ojde](https://github.com/ojde)
+- [@autoclave73](https://github.com/autoclave73)
