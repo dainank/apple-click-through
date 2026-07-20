@@ -6,6 +6,11 @@ accessibility element under the mouse on click, so a single click both focuses
 the window and activates the clicked control.
 --]]
 
+local hs = rawget(_G, "hs")
+if not hs then
+    error("This script must run inside Hammerspoon.")
+end
+
 local ax = require("hs.axuielement")
 
 -- ============================================================================
@@ -30,7 +35,8 @@ end
 -- LOGGING
 -- ============================================================================
 
-local logfilePath = os.getenv("HOME") .. "/hammerspoon_clickthrough.log"
+local logDirPath = os.getenv("HOME") .. "/Library/Logs/apple-click-through"
+local logfilePath = logDirPath .. "/main.log"
 local MAX_LOG_SIZE = 5 * 1024 * 1024  -- 5 MB
 local logfile = nil
 
@@ -47,6 +53,14 @@ end
 
 local function openLogFile()
     if logfile then pcall(function() logfile:close() end) end
+
+    local ok, err = pcall(function()
+        os.execute("mkdir -p '" .. logDirPath .. "'")
+    end)
+    if not ok then
+        print(string.format("[clickthrough] WARNING: cannot create log directory '%s': %s", logDirPath, tostring(err)))
+    end
+
     rotateLogIfNeeded()
     logfile = io.open(logfilePath, "a")
 end
@@ -129,7 +143,7 @@ local function hsWindowFromAxWindow(axWin)
     local size = getAxAttribute(axWin, "AXSize")
     if not pos or not size then return nil end
 
-    for _, win in ipairs(hs.window.orderedWindows()) do
+    for _, win in ipairs(hs.window.orderedWindows() or {}) do
         local ok, frame = pcall(function() return win:frame() end)
         if ok and frame then
             if math.abs(frame.x - pos.x) <= 2
@@ -156,21 +170,21 @@ end
 --         ax.systemElementAtPosition(), which performs the same search natively
 --         and is orders of magnitude faster.
 local function findTarget(mousePos)
-    for _, win in ipairs(hs.window.orderedWindows()) do
-        local ok, vis = pcall(function() return win:isVisible() end)
-        if ok and vis then
-            local frame = win:frame()
-            if frame and rectContains(mousePos, frame) then
-                return { kind = "window", win = win }
-            end
-        end
-    end
-
     local ok, elem = pcall(function()
         return ax.systemElementAtPosition(mousePos)
     end)
     if ok and elem then
         return { kind = "ax", elem = elem }
+    end
+
+    for _, win in ipairs(hs.window.orderedWindows() or {}) do
+        local okWin, vis = pcall(function() return win:isVisible() end)
+        if okWin and vis then
+            local frame = win:frame()
+            if frame and rectContains(mousePos, frame) then
+                return { kind = "window", win = win }
+            end
+        end
     end
 
     return nil
@@ -198,20 +212,30 @@ function(event)  -- luacheck: ignore event (reserved for future use)
     --- * A window-resize handle may be just outside of the window
     --- * A drag/drop operation
     local mouseCursorType = hs.mouse.currentCursorType()
+    local cursorName = tostring(mouseCursorType or "")
     local skipOnCursor = {
-        operationNotAllowedCursor,
-        -- arrowCursor=true, 
-        contextualMenuCursor=true, closedHandCursor=true, crosshairCursor=true, disappearingItemCursor=true, 
-        dragCopyCursor=true, dragLinkCursor=true, 
-        -- IBeamCursor=true, 
-        resizeDownCursor=true, resizeLeftCursor=true, resizeLeftRightCursor=true, resizeRightCursor=true, resizeUpCursor=true, resizeUpDownCursor=true,
-        -- IBeamCursorForVerticalLayout,
-        unknown=true,
-        unknownCursor=true
+        operationNotAllowedCursor = true,
+        -- arrowCursor = true,
+        contextualMenuCursor = true,
+        closedHandCursor = true,
+        crosshairCursor = true,
+        disappearingItemCursor = true,
+        dragCopyCursor = true,
+        dragLinkCursor = true,
+        -- IBeamCursor = true,
+        resizeDownCursor = true,
+        resizeLeftCursor = true,
+        resizeLeftRightCursor = true,
+        resizeRightCursor = true,
+        resizeUpCursor = true,
+        resizeUpDownCursor = true,
+        -- IBeamCursorForVerticalLayout = true,
+        unknown = true,
+        unknownCursor = true,
     }
-    log("mouseCursorType: " .. (mouseCursorType or "nil"))
-    if nil ~= mouseCursorType and nil ~= skipOnCursor[mouseCursorType] then
-        log("Skip on mouseCursorType: " .. mouseCursorType)
+    log("mouseCursorType: " .. cursorName)
+    if cursorName ~= "" and skipOnCursor[cursorName] then
+        log("Skip on mouseCursorType: " .. cursorName)
         return false
     end
 
