@@ -3,10 +3,10 @@
 > [!CAUTION]
 > This script is WIP. There may be unforeseen issues.
 
-The goal of this script is to provide **a robust solution on MacOS for not requiring an explicit click to make window active, before UI elements inside can be clicked**. It will essentially **enable click-through** with no noticeable effects to the user.
+This script **enables click through on macOS**, allowing you to **click UI elements inside inactive windows without clicking the window first**.
 
 > [!INFO]
-> This script has been tested and works on MacOS 27 & 28.
+> This script has been tested and works on MacOS 27 & 28. Prior versions may work but were not tested.
 
 ----
 
@@ -14,14 +14,15 @@ The goal of this script is to provide **a robust solution on MacOS for not requi
 
 1. `brew install hammerspoon`
     - If you are not using [Homebrew][2], simply install [Hammerspoon][3] from their website.
-2. Launch `hammerspoon`
+2. Launch `hammerspoon`.
 2. Configure `hammerspoon` such that it has sufficient rights.
-3. Click on the **hammer** icon in the top-right menu bar and select **Open Config.**
+3. Click on the **hammer** icon in the top-right menu bar and select **Open Config**.
     - This config is located at `/Users/$USER/.hammerspoon/init.lua` for me.
 4. Copy the [following config][1] into your `hammerspoon` config.
+    - Run `./install.sh` from the repository root to do this effortlessly.
 5. Click on the **hammer** icon again and press **Reload Config**.
 6. `tail -f ~/Library/Logs/apple-click-through/main.log`
-    - This will print the logs of click events to help verify whether the solution is working (also use these logs to debug if behavior is as expected).
+    - This prints click event logs to verify the solution and debug unexpected behavior.
 
 ## To Note
 

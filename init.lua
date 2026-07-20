@@ -6,6 +6,11 @@ accessibility element under the mouse on click, so a single click both focuses
 the window and activates the clicked control.
 --]]
 
+local hs = rawget(_G, "hs")
+if not hs then
+    error("This script must run inside Hammerspoon.")
+end
+
 local ax = require("hs.axuielement")
 
 -- ============================================================================
