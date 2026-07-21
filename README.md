@@ -20,7 +20,7 @@ This script **enables click through on macOS**, allowing you to **click UI eleme
 3. Click on the **hammer** icon in the top-right menu bar and select **Open Config**.
     - This config is located at `/Users/$USER/.hammerspoon/init.lua` for me.
 4. Copy the [following config][1] into your `hammerspoon` config.
-    - Run `[./install.sh](./install.sh)` from the repository root to do this effortlessly.
+    - Run [`./install.sh`](./install.sh) from the repository root to do this effortlessly.
 5. Click on the **hammer** icon again and press **Reload Config**.
 6. `tail -f ~/Library/Logs/apple-click-through/main.log`
     - This prints click event logs to verify the solution and debug unexpected behavior.
