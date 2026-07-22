@@ -196,8 +196,32 @@ end
 
 local lastClickTime = 0
 
+local function shouldDisableClickThrough()
+    local frontmost = hs.window.frontmostWindow()
+    if not frontmost then
+        return false
+    end
+
+    local ok, isFullScreen = pcall(function() return frontmost:isFullScreen() end)
+    if ok and isFullScreen then
+        return true
+    end
+
+    local okApp, app = pcall(function() return frontmost:application() end)
+    if okApp and app and getAxAttribute(app, "AXFullScreen", false) then
+        return true
+    end
+
+    return false
+end
+
 local clickLogger = hs.eventtap.new({ hs.eventtap.event.types.leftMouseDown },
 function(event)  -- luacheck: ignore event (reserved for future use)
+
+    if shouldDisableClickThrough() then
+        log("Skipping click-through: fullscreen mode detected")
+        return false
+    end
 
     -- skip clicks that arrive within 50 ms of the previous one
     -- (double-clicks, triple-clicks, OS auto-repeat) to avoid redundant work.
