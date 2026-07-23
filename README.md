@@ -43,7 +43,7 @@ Copy the latest version of the [Lua Script](https://github.com/dainank/apple-cli
 - If you encounter any issues or have improvements in mind, please let me know via the [issues tab](https://github.com/dainank/apple-click-through/issues)! Include a relevant log snippet (see step 6 above for info).
 - For any applications that misbehave with this script, you can exclude them by tweaking the config.
 
-  [1]: https://github.com/dainank/apple-click-through/blob/94e243720499a8df8595485508d5c6b1802269a2/init.lua
+  [1]: https://github.com/dainank/apple-click-through/blob/main/init.lua
   [2]: https://brew.sh/
   [3]: https://www.hammerspoon.org/
 
