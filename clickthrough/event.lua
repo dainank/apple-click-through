@@ -33,7 +33,7 @@ local function shouldDisableClickThrough()
     return false
 end
 
-local function onClick()
+local function onClick(event)
     if shouldDisableClickThrough() then
         log("Skipping click-through: fullscreen mode detected")
         return false
