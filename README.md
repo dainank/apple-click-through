@@ -19,8 +19,7 @@ This script **enables click through on macOS**, allowing you to **click UI eleme
 2. Configure `hammerspoon` such that it has sufficient rights.
 3. Click on the **hammer** icon in the top-right menu bar and select **Open Config**.
     - This config is located at `/Users/$USER/.hammerspoon/init.lua` for me.
-4. Copy the [following config][1] into your `hammerspoon` config.
-    - Run [`./install.sh`](./install.sh) from the repository root to do this effortlessly.
+4. Run [`./install.sh`](./install.sh) from the repository root to install the module files into `~/.hammerspoon/clickthrough` and patch your existing `~/.hammerspoon/init.lua` safely.
 5. Click on the **hammer** icon again and press **Reload Config**.
 6. `tail -f ~/Library/Logs/apple-click-through/main.log`
     - This prints click event logs to verify the solution and debug unexpected behavior.
@@ -28,9 +27,9 @@ This script **enables click through on macOS**, allowing you to **click UI eleme
 ----
 
 ## Update
-> Repeat steps 4/5 from above.
+> Repeat step 4 from above.
 
-Copy the latest version of the [Lua Script](https://github.com/dainank/apple-click-through/blob/main/init.lua) to your `/Users/$USER/.hammerspoon/init.lua` location.
+Pull the latest changes from this repository and run `./install.sh --force` to refresh the module files and reapply the loader line in your `~/.hammerspoon/init.lua`.
 
 > [!TIP]
 > The above requires quite some manual work, it is easier to clone the repository. For updates, you can then just run `git pull && ./install.sh --force` to get latest changes. Feel free to automate this one-liner every month or so for automatic latest greatest.
