@@ -11,6 +11,8 @@ SOURCE_DIR="$SCRIPT_DIR"
 DEST_DIR="$HOME/.hammerspoon"
 DEST_MODULE_DIR="$DEST_DIR/clickthrough"
 DEST_INIT="$DEST_DIR/init.lua"
+USER_CONFIG="$DEST_DIR/clickthrough_config.lua"
+CONFIG_TEMPLATE="$SOURCE_DIR/clickthrough_config.lua.example"
 BACKUP_FILE="$DEST_DIR/init_backup.lua"
 
 if [ ! -d "$SOURCE_DIR/clickthrough" ]; then
@@ -23,6 +25,11 @@ mkdir -p "$DEST_MODULE_DIR"
 cp -R "$SOURCE_DIR/clickthrough/." "$DEST_MODULE_DIR/"
 
 echo "Installed clickthrough module files to $DEST_MODULE_DIR"
+
+if [ ! -f "$USER_CONFIG" ] && [ -f "$CONFIG_TEMPLATE" ]; then
+    cp "$CONFIG_TEMPLATE" "$USER_CONFIG"
+    echo "Created user config at $USER_CONFIG"
+fi
 
 if [ -f "$DEST_INIT" ]; then
     if [ "$FORCE_OVERWRITE" = true ] || ! grep -q 'require("clickthrough")' "$DEST_INIT" && ! grep -q "require('clickthrough')" "$DEST_INIT"; then

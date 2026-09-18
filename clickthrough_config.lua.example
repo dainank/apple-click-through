@@ -1,0 +1,18 @@
+-- Copy this file to ~/.hammerspoon/clickthrough_config.lua and edit it.
+-- The installed module loads it automatically and never overwrites it.
+return {
+    -- Prefer bundle IDs. They are stable even when an app is localized.
+    excludedBundleIDs = {
+        -- "com.example.SomeApp",
+    },
+
+    -- App names are easier to read, but can change with localization.
+    excludedAppNames = {
+        -- "Some App",
+    },
+
+    -- These are window titles, not app names. Use only for special windows.
+    excludedWindowTitles = {
+        -- "Some Window",
+    },
+}

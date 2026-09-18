@@ -3,6 +3,7 @@ local logging = require("clickthrough.logging")
 local utils = require("clickthrough.utils")
 local target = require("clickthrough.target")
 local ax_utils = require("clickthrough.ax_utils")
+local config = require("clickthrough.config")
 
 local log = logging.log
 local clickLogger
@@ -78,6 +79,15 @@ local function onClick(event)
         return false
     end
 
+    local targetWindow = targetResult.kind == "window" and targetResult.win or nil
+    if targetWindow then
+        log("Target " .. config.describeWindow(targetWindow), "DEBUG")
+        if config.isExcluded(targetWindow) then
+            log("Skip: excluded application")
+            return false
+        end
+    end
+
     if targetResult.kind == "window" then
         local win = targetResult.win
         local ok, subrole = pcall(function()
@@ -88,15 +98,11 @@ local function onClick(event)
             return false
         end
 
-        local SKIP_FOR_WINDOW_TITLES = {
-            ["Sharing Indicator"] = true,
-        }
-
         local frontmost = hs.window.frontmostWindow()
         local winTitle = win:title() or "-Untitled-"
         if win:id() == (frontmost and frontmost:id()) then
             log("Clicked already-focused window: " .. (win:title() or "Untitled"))
-        elseif SKIP_FOR_WINDOW_TITLES[winTitle] then
+        elseif config.isExcludedWindowTitle(winTitle) then
             log("Skip: special window: " .. winTitle)
             return false
         else
@@ -129,6 +135,12 @@ local function onClick(event)
 
             local parentWin = ax_utils.hsWindowFromAxWindow(axWin)
             if parentWin then
+                log("Target " .. config.describeWindow(parentWin), "DEBUG")
+                if config.isExcluded(parentWin) then
+                    log("Skip: excluded application")
+                    return false
+                end
+
                 local frontmost = hs.window.frontmostWindow()
                 if parentWin:id() ~= (frontmost and frontmost:id()) then
                     parentWin:focus()

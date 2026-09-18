@@ -23,6 +23,7 @@ This script **enables click through on macOS**, allowing you to **click UI eleme
 5. Click on the **hammer** icon again and press **Reload Config**.
 6. `tail -f ~/Library/Logs/apple-click-through/main.log`
     - This prints click event logs to verify the solution and debug unexpected behavior.
+7. Open `~/.hammerspoon/clickthrough_config.lua` to add applications to the exclusion list.
 
 ----
 
@@ -41,6 +42,11 @@ Pull the latest changes from this repository and run `./install.sh --force` to r
 - I hope to someday bundle this into a simple install script if it proves stable over time.
 - If you encounter any issues or have improvements in mind, please let me know via the [issues tab](https://github.com/dainank/apple-click-through/issues)! Include a relevant log snippet (see step 6 above for info).
 - For any applications that misbehave with this script, you can exclude them by tweaking the config.
+    The config is created by `install.sh` and is preserved during updates. Add a bundle ID to
+    `excludedBundleIDs` (recommended) or an app name to `excludedAppNames`. The debug log records
+    the app name, bundle ID, and window title for targets, making it easy to copy the right value.
+    The default exclusions cover macOS system UI apps; `excludedWindowTitles` is available for
+    special windows such as the built-in Sharing Indicator exclusion.
 
   [1]: https://github.com/dainank/apple-click-through/blob/main/init.lua
   [2]: https://brew.sh/
