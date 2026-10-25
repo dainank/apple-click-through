@@ -38,7 +38,6 @@ Pull the latest changes from this repository and run `./install.sh --force` to r
 
 ## To Note
 
-- I hope to someday bundle this into a simple install script if it proves stable over time.
 - If you encounter any issues or have improvements in mind, please let me know via the [issues tab](https://github.com/dainank/apple-click-through/issues)! Include a relevant log snippet (see step 6 above for info).
 - For any applications that misbehave with this script, you can exclude them by tweaking the config.
 
@@ -51,12 +50,6 @@ Pull the latest changes from this repository and run `./install.sh --force` to r
 ## History
 
 The original [GitHub Gist for this idea, can be found here](https://gist.github.com/dainank/fd236aa71a8b3fcf637b9d8428ce98db), which was sparked by this discussion [here](https://apple.stackexchange.com/q/269622/583325).
-
-----
-
-## Mirror
-
-We have a mirror on _gidot_, an open-source alternative to _GitHub_: https://gitdot.io/dainank/apple-click-through
 
 ----
 
