@@ -137,13 +137,9 @@ local function onClick(event)
             end
         end
 
-        local isFocused = utils.getAxAttribute(elem, "AXFocused")
-        if isFocused ~= true then
-            utils.setAxAttribute(elem, "AXFocused", true)
-            log("Focused AX element: " .. title .. " (" .. role .. ")")
-        else
-            log("Clicked already-focused AX element: " .. title .. " (" .. role .. ")")
-        end
+        -- No AXFocused write: the real click passes through and focuses the element itself.
+        -- Writing it on every click made browsers/Electron apps scroll the element into view
+        -- (window jumps to the top) and can switch on Full Keyboard Access (issue #8).
     end
 
     return false
